@@ -3,7 +3,8 @@ package main
 import (
 	"context"
 	"log"
-	"mediator"
+
+	"github.com/eyazici90/go-mediator"
 )
 
 func main() {
