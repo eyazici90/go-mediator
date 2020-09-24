@@ -1,2 +1,2 @@
 # go-mediator
-Simple mediator implementation in golang
+Simple reflect based mediator implementation in golang
