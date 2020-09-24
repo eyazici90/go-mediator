@@ -21,8 +21,8 @@ func main() {
 	cmd := FakeCommand{
 		Name: "Emre",
 	}
-
-	m.Send(context.Background(), cmd)
+	ctx := context.Background()
+	m.Send(ctx, cmd)
 
 }
 
