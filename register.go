@@ -4,6 +4,14 @@ import "reflect"
 
 type initializer interface {
 	RegisterHandler(handler interface{}) Mediator
+	RegisterHandlers(handlers ...interface{}) Mediator
+}
+
+func (m *reflectBasedMediator) RegisterHandlers(handlers ...interface{}) Mediator {
+	for _, handler := range handlers {
+		m.RegisterHandler(handler)
+	}
+	return m
 }
 
 func (m *reflectBasedMediator) RegisterHandler(handler interface{}) Mediator {
