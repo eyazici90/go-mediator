@@ -13,15 +13,17 @@ type Mediator interface {
 }
 
 type reflectBasedMediator struct {
-	behaviour    func(context.Context, interface{}) error
+	behaviours   []func(context.Context, interface{}, Next) error
+	pipeline     func(context.Context, interface{}) error
 	handlers     map[reflect.Type]interface{}
 	handlersFunc map[reflect.Type]reflect.Value
 }
 
-func NewMediator() Mediator {
+func New() Mediator {
 	return &reflectBasedMediator{
 		handlers:     make(map[reflect.Type]interface{}),
 		handlersFunc: make(map[reflect.Type]reflect.Value),
-		behaviour:    nil,
+		pipeline:     nil,
+		behaviours:   nil,
 	}
 }

@@ -7,6 +7,7 @@ type PipelineBehaviour interface {
 }
 
 type pipelineBuilder interface {
+	Build() Mediator
 	UseBehaviour(PipelineBehaviour) Mediator
 	Use(call func(context.Context, interface{}, Next) error) Mediator
 }
@@ -16,14 +17,22 @@ func (m *reflectBasedMediator) UseBehaviour(pipelineBehaviour PipelineBehaviour)
 }
 
 func (m *reflectBasedMediator) Use(call func(context.Context, interface{}, Next) error) Mediator {
-	if m.behaviour == nil {
-		m.behaviour = m.send
-	}
-	seed := m.behaviour
+	m.behaviours = append(m.behaviours, call)
+	return m
+}
 
-	m.behaviour = func(ctx context.Context, msg interface{}) error {
+func (m *reflectBasedMediator) Build() Mediator {
+	reverseApply(m.behaviours, m.pipe)
+	return m
+}
+
+func (m *reflectBasedMediator) pipe(call func(context.Context, interface{}, Next) error) {
+	if m.pipeline == nil {
+		m.pipeline = m.send
+	}
+	seed := m.pipeline
+
+	m.pipeline = func(ctx context.Context, msg interface{}) error {
 		return call(ctx, msg, func(context.Context) error { return seed(ctx, msg) })
 	}
-
-	return m
 }

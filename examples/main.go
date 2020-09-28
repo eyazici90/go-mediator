@@ -9,15 +9,23 @@ import (
 
 func main() {
 
-	m := mediator.NewMediator().
+	m := mediator.New().
 		Use(func(ctx context.Context, cmd interface{}, next mediator.Next) error {
-			log.Println("Pre Process!")
+			log.Println("Pre Process - 1!")
 			next(ctx)
-			log.Println("Post Process")
+			log.Println("Post Process - 1")
 
 			return nil
 		}).
-		RegisterHandler(NewFakeCommandHandler())
+		Use(func(ctx context.Context, cmd interface{}, next mediator.Next) error {
+			log.Println("Pre Process!- 2")
+			next(ctx)
+			log.Println("Post Process - 2")
+
+			return nil
+		}).
+		RegisterHandler(NewFakeCommandHandler()).
+		Build()
 
 	cmd := FakeCommand{
 		Name: "Emre",

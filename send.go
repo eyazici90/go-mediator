@@ -10,8 +10,8 @@ type sender interface {
 }
 
 func (m *reflectBasedMediator) Send(ctx context.Context, msg interface{}) error {
-	if m.behaviour != nil {
-		return m.behaviour(ctx, msg)
+	if m.pipeline != nil {
+		return m.pipeline(ctx, msg)
 	}
 	return m.send(ctx, msg)
 }
