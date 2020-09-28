@@ -48,8 +48,7 @@ Simple mediator implementation in golang
 
 ***Func based usage***
 
-    m := mediator.New().
-				  Use(func(ctx context.Context, cmd interface{}, next mediator.Next) error {
+    m := mediator.New().Use(func(ctx context.Context, cmd interface{}, next mediator.Next) error {
 				    
 					    log.Println("Pre Process!")
 					    
@@ -59,8 +58,7 @@ Simple mediator implementation in golang
 					    
 					    return  nil
 				    
-				    }).
-				  Build()
+				    }).Build()
        
 
 ## Usages
