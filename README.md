@@ -79,6 +79,6 @@ Simple mediator implementation in golang
     m.Send(ctx, cmd)
     
 ## Examples
-[enter link description here](https://github.com/eyazici90/go-mediator/tree/master/examples)
+[Simple](https://github.com/eyazici90/go-mediator/tree/master/examples)
 
 TBD...
