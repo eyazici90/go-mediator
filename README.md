@@ -1,4 +1,5 @@
 
+
 # go-mediator
 Simple mediator implementation in golang
 
@@ -47,28 +48,32 @@ Simple mediator implementation in golang
 
 ***Func based usage***
 
-    m := mediator.NewMediator().Use(func(ctx context.Context, cmd interface{}, next mediator.Next) error {
-    
-	    log.Println("Pre Process!")
-	    
-	    next(ctx)
-	    
-	    log.Println("Post Process") 
-	    
-	    return  nil
-    
-    })
+    m := mediator.New().
+		    Use(func(ctx context.Context, cmd interface{}, next mediator.Next) error {
+		    
+			    log.Println("Pre Process!")
+			    
+			    next(ctx)
+			    
+			    log.Println("Post Process") 
+			    
+			    return  nil
+		    
+		    }).
+		    Build()
        
 
 ## Usages
 
-    m := mediator.NewMediator(). 
+    m := mediator.New(). 
 			    
 			    UseBehaviour(behaviour.NewLogger()).
 			    
 			    UseBehaviour(behaviour.NewValidator()).
 			    
-			    RegisterHandlers(command.NewFakeCommandCommandHandler(r))
+			    RegisterHandlers(command.NewFakeCommandCommandHandler(r)).
+			    
+			    Build()
 
     cmd := FakeCommand{
 	    Name: "Amsterdam", 
