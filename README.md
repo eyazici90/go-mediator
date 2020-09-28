@@ -44,7 +44,7 @@ Simple mediator implementation in golang
 		    return result
     }
     
-    m := mediator.NewMediator().UseBehaviour(behaviour.NewLogger())
+    m := mediator.New().UseBehaviour(behaviour.NewLogger()).Build()
 
 ***Func based usage***
 
