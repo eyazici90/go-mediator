@@ -2,6 +2,8 @@ package mediator
 
 import "context"
 
+type Behaviour func(context.Context, interface{}, Next) error
+
 type PipelineBehaviour interface {
 	Process(context.Context, interface{}, Next) error
 }
@@ -12,21 +14,21 @@ type pipelineBuilder interface {
 	Use(call func(context.Context, interface{}, Next) error) Mediator
 }
 
-func (m *reflectBasedMediator) UseBehaviour(pipelineBehaviour PipelineBehaviour) Mediator {
+func (m *mediator) UseBehaviour(pipelineBehaviour PipelineBehaviour) Mediator {
 	return m.Use(pipelineBehaviour.Process)
 }
 
-func (m *reflectBasedMediator) Use(call func(context.Context, interface{}, Next) error) Mediator {
+func (m *mediator) Use(call func(context.Context, interface{}, Next) error) Mediator {
 	m.behaviours = append(m.behaviours, call)
 	return m
 }
 
-func (m *reflectBasedMediator) Build() Mediator {
+func (m *mediator) Build() Mediator {
 	reverseApply(m.behaviours, m.pipe)
 	return m
 }
 
-func (m *reflectBasedMediator) pipe(call func(context.Context, interface{}, Next) error) {
+func (m *mediator) pipe(call Behaviour) {
 	if m.pipeline == nil {
 		m.pipeline = m.send
 	}

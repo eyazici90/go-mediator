@@ -4,6 +4,6 @@ type publisher interface {
 	Publish(msg interface{})
 }
 
-func (m *reflectBasedMediator) Publish(msg interface{}) {
+func (m *mediator) Publish(msg interface{}) {
 	//
 }

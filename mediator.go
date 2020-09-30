@@ -1,7 +1,6 @@
 package mediator
 
 import (
-	"context"
 	"reflect"
 )
 
@@ -12,15 +11,15 @@ type Mediator interface {
 	pipelineBuilder
 }
 
-type reflectBasedMediator struct {
-	behaviours   []func(context.Context, interface{}, Next) error
-	pipeline     func(context.Context, interface{}) error
+type mediator struct {
+	behaviours   []Behaviour
+	pipeline     Pipeline
 	handlers     map[reflect.Type]interface{}
 	handlersFunc map[reflect.Type]reflect.Value
 }
 
 func New() Mediator {
-	return &reflectBasedMediator{
+	return &mediator{
 		handlers:     make(map[reflect.Type]interface{}),
 		handlersFunc: make(map[reflect.Type]reflect.Value),
 		pipeline:     nil,

@@ -22,9 +22,7 @@ func callHandle(handler interface{}, msg interface{}) error {
 
 	handleMethod, ok := handlerType.MethodByName(handleMethodName)
 
-	if !ok {
-		panic("handle method does not exists for the typeOf" + handlerType.String())
-	}
+	must(ok, handlerType.String())
 
 	in := []reflect.Value{reflect.ValueOf(handler), reflect.ValueOf(msg)}
 
