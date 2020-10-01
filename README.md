@@ -1,7 +1,8 @@
 
 
 # go-mediator
-Simple mediator implementation in golang
+Simple mediator implementation in golang. <br/>
+In-process messaging.
 
 ## Commands
 
