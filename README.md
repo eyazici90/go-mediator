@@ -64,8 +64,7 @@ In-process messaging.
 
 ## Usages
 
-    m := mediator.New(). 
-			    
+    m := mediator.New().  
 			    UseBehaviour(behaviour.NewLogger()). 
 			    UseBehaviour(behaviour.NewValidator()). 
 			    RegisterHandlers(command.NewFakeCommandCommandHandler(r)). 
