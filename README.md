@@ -65,10 +65,10 @@ In-process messaging.
 ## Usages
 
     m := mediator.New().  
-			    UseBehaviour(behaviour.NewLogger()). 
-			    UseBehaviour(behaviour.NewValidator()). 
-			    RegisterHandlers(command.NewFakeCommandCommandHandler(r)). 
-			    Build()
+		  UseBehaviour(behaviour.NewLogger()). 
+		  UseBehaviour(behaviour.NewValidator()). 
+		  RegisterHandlers(command.NewFakeCommandCommandHandler(r)). 
+		  Build()
 
     cmd := FakeCommand{
 	    Name: "Amsterdam", 
