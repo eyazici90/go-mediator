@@ -66,12 +66,9 @@ In-process messaging.
 
     m := mediator.New(). 
 			    
-			    UseBehaviour(behaviour.NewLogger()).
-			    
-			    UseBehaviour(behaviour.NewValidator()).
-			    
-			    RegisterHandlers(command.NewFakeCommandCommandHandler(r)).
-			    
+			    UseBehaviour(behaviour.NewLogger()). 
+			    UseBehaviour(behaviour.NewValidator()). 
+			    RegisterHandlers(command.NewFakeCommandCommandHandler(r)). 
 			    Build()
 
     cmd := FakeCommand{
