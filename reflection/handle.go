@@ -1,13 +1,10 @@
-package mediator
+package reflection
 
 import (
-	"context"
 	"reflect"
+
+	"github.com/eyazici90/go-mediator"
 )
-
-type Next func(ctx context.Context) error
-
-const handleMethodName string = "Handle"
 
 func call(handler interface{}, ctx interface{}, method reflect.Value, msg interface{}) error {
 	in := []reflect.Value{reflect.ValueOf(handler), reflect.ValueOf(ctx), reflect.ValueOf(msg)}
@@ -22,7 +19,7 @@ func callHandle(handler interface{}, msg interface{}) error {
 
 	handleMethod, ok := handlerType.MethodByName(handleMethodName)
 
-	must(ok, handlerType.String())
+	mediator.Must(ok, handlerType.String())
 
 	in := []reflect.Value{reflect.ValueOf(handler), reflect.ValueOf(msg)}
 

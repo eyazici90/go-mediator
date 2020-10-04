@@ -5,23 +5,18 @@ import (
 	"reflect"
 )
 
-type sender interface {
-	Send(context.Context, interface{}) error
-}
-
 func (m *mediator) Send(ctx context.Context, msg interface{}) error {
-	if m.pipeline != nil {
-		return m.pipeline(ctx, msg)
+	if m.PipelineContext.Pipeline != nil {
+		return m.PipelineContext.Pipeline(ctx, msg)
 	}
 	return m.send(ctx, msg)
 }
 
-func (m *mediator) send(ctx context.Context, msg interface{}) error {
-	msgType := reflect.TypeOf(msg)
-	handler, ok := m.handlers[msgType]
+func (m *mediator) send(ctx context.Context, request interface{}) error {
+	requestType := reflect.TypeOf(request).Name()
+	handler, ok := m.handlers[requestType]
 	if !ok {
 		return HandlerNotFound
 	}
-	handlerFunc, _ := m.handlersFunc[msgType]
-	return call(handler, ctx, handlerFunc, msg)
+	return handler.Handle(ctx, request)
 }

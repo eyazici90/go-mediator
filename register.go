@@ -1,29 +1,23 @@
 package mediator
 
-import "reflect"
+import (
+	"reflect"
+	"strings"
+)
 
-type initializer interface {
-	RegisterHandler(handler interface{}) Mediator
-	RegisterHandlers(handlers ...interface{}) Mediator
-}
+const handlerName = "Handler"
 
-func (m *mediator) RegisterHandlers(handlers ...interface{}) Mediator {
+func (m *mediator) RegisterHandlers(handlers ...RequestHandler) Mediator {
 	for _, handler := range handlers {
 		m.RegisterHandler(handler)
 	}
 	return m
 }
 
-func (m *mediator) RegisterHandler(handler interface{}) Mediator {
-	handlerType := reflect.TypeOf(handler)
+func (m *mediator) RegisterHandler(handler RequestHandler) Mediator {
+	handlerName := reflect.TypeOf(handler).Name()
+	requestType := strings.ReplaceAll(handlerName, handlerName, "")
 
-	method, ok := handlerType.MethodByName(handleMethodName)
-
-	must(ok, handlerType.String())
-
-	cType := reflect.TypeOf(method.Func.Interface()).In(2)
-
-	m.handlers[cType] = handler
-	m.handlersFunc[cType] = method.Func
+	m.handlers[requestType] = handler
 	return m
 }

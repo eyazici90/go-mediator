@@ -2,39 +2,27 @@ package mediator
 
 import "context"
 
-type Behaviour func(context.Context, interface{}, Next) error
-
-type PipelineBehaviour interface {
-	Process(context.Context, interface{}, Next) error
-}
-
-type pipelineBuilder interface {
-	Build() Mediator
-	UseBehaviour(PipelineBehaviour) Mediator
-	Use(call func(context.Context, interface{}, Next) error) Mediator
-}
-
 func (m *mediator) UseBehaviour(pipelineBehaviour PipelineBehaviour) Mediator {
 	return m.Use(pipelineBehaviour.Process)
 }
 
 func (m *mediator) Use(call func(context.Context, interface{}, Next) error) Mediator {
-	m.behaviours = append(m.behaviours, call)
+	m.PipelineContext.Behaviours = append(m.PipelineContext.Behaviours, call)
 	return m
 }
 
 func (m *mediator) Build() Mediator {
-	reverseApply(m.behaviours, m.pipe)
+	ReverseApply(m.PipelineContext.Behaviours, m.pipe)
 	return m
 }
 
 func (m *mediator) pipe(call Behaviour) {
-	if m.pipeline == nil {
-		m.pipeline = m.send
+	if m.PipelineContext.Pipeline == nil {
+		m.PipelineContext.Pipeline = m.send
 	}
-	seed := m.pipeline
+	seed := m.PipelineContext.Pipeline
 
-	m.pipeline = func(ctx context.Context, msg interface{}) error {
+	m.PipelineContext.Pipeline = func(ctx context.Context, msg interface{}) error {
 		return call(ctx, msg, func(context.Context) error { return seed(ctx, msg) })
 	}
 }

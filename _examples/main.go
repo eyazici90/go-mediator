@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"github.com/eyazici90/go-mediator"
@@ -46,7 +47,10 @@ func NewFakeCommandHandler() FakeCommandHandler {
 	return FakeCommandHandler{}
 }
 
-func (handler FakeCommandHandler) Handle(_ context.Context, cmd FakeCommand) error {
-	log.Println(cmd.Name)
+func (handler FakeCommandHandler) Handle(_ context.Context, command interface{}) error {
+	cmd := command.(FakeCommand)
+	if cmd.Name == "" {
+		return errors.New("Name is empty")
+	}
 	return nil
 }
