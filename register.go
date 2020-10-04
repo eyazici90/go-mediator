@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const handlerNamePrefix string = `Handler`
+const handlerPrefix string = `Handler`
 
 func (m *mediator) RegisterHandlers(handlers ...RequestHandler) Mediator {
 	for _, handler := range handlers {
@@ -16,7 +16,7 @@ func (m *mediator) RegisterHandlers(handlers ...RequestHandler) Mediator {
 
 func (m *mediator) RegisterHandler(handler RequestHandler) Mediator {
 	handlerName := reflect.TypeOf(handler).Name()
-	requestType := strings.ReplaceAll(handlerName, handlerNamePrefix, "")
+	requestType := strings.ReplaceAll(handlerName, handlerPrefix, "")
 
 	m.handlers[requestType] = handler
 	return m
