@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	m := mediator.New().
+	m, _ := mediator.New().
 		Use(func(ctx context.Context, cmd interface{}, next mediator.Next) error {
 			log.Println("Pre Process - 1!")
 			next(ctx)
@@ -25,7 +25,7 @@ func main() {
 
 			return nil
 		}).
-		RegisterHandler(NewFakeCommandHandler()).
+		RegisterHandler(FakeCommand{}, NewFakeCommandHandler()).
 		Build()
 
 	cmd := FakeCommand{

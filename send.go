@@ -20,3 +20,14 @@ func (m *mediator) send(ctx context.Context, request interface{}) error {
 	}
 	return handler.Handle(ctx, request)
 }
+
+func (m *mediator) pipe(call Behaviour) {
+	if m.PipelineContext.Pipeline == nil {
+		m.PipelineContext.Pipeline = m.send
+	}
+	seed := m.PipelineContext.Pipeline
+
+	m.PipelineContext.Pipeline = func(ctx context.Context, msg interface{}) error {
+		return call(ctx, msg, func(context.Context) error { return seed(ctx, msg) })
+	}
+}

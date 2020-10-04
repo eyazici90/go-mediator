@@ -5,9 +5,10 @@ type mediator struct {
 	handlers map[string]RequestHandler
 }
 
-func New() Mediator {
+func newMediator(pipelineContext PipelineContext,
+	handlers map[string]RequestHandler) *mediator {
 	return &mediator{
-		handlers:        make(map[string]RequestHandler),
-		PipelineContext: NewPipelineContext(),
+		handlers:        handlers,
+		PipelineContext: pipelineContext,
 	}
 }
