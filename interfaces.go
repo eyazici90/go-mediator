@@ -4,13 +4,13 @@ import "context"
 
 type (
 	Mediator interface {
-		sender
-		publisher
+		Sender
+		Publisher
 	}
-	sender interface {
+	Sender interface {
 		Send(context.Context, interface{}) error
 	}
-	publisher interface {
+	Publisher interface {
 		Publish(msg interface{})
 	}
 	Builder interface {
