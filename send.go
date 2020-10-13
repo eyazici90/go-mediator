@@ -13,7 +13,7 @@ func (m *mediator) Send(ctx context.Context, msg interface{}) error {
 }
 
 func (m *mediator) send(ctx context.Context, request interface{}) error {
-	requestType := reflect.TypeOf(request).Name()
+	requestType := reflect.TypeOf(request)
 	handler, ok := m.handlers[requestType]
 	if !ok {
 		return HandlerNotFound

@@ -7,13 +7,13 @@ import (
 
 type builder struct {
 	pipelineContext PipelineContext
-	handlers        map[string]RequestHandler
+	handlers        map[reflect.Type]RequestHandler
 }
 
 func New() Builder {
 	return &builder{
 		pipelineContext: NewPipelineContext(),
-		handlers:        make(map[string]RequestHandler),
+		handlers:        make(map[reflect.Type]RequestHandler),
 	}
 }
 
@@ -27,7 +27,7 @@ func (b *builder) Use(call func(context.Context, interface{}, Next) error) Build
 }
 
 func (b *builder) RegisterHandler(request interface{}, handler RequestHandler) Builder {
-	requestType := reflect.TypeOf(request).Name()
+	requestType := reflect.TypeOf(request)
 
 	b.handlers[requestType] = handler
 	return b
