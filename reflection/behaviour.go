@@ -16,7 +16,7 @@ func (m *reflectBasedMediator) Use(call func(context.Context, interface{}, media
 }
 
 func (m *reflectBasedMediator) Build() Mediator {
-	mediator.ReverseApply(m.PipelineContext.Behaviours, m.pipe)
+	reverseApply(m.PipelineContext.Behaviours, m.pipe)
 	return m
 }
 
@@ -28,5 +28,12 @@ func (m *reflectBasedMediator) pipe(call mediator.Behaviour) {
 
 	m.PipelineContext.Pipeline = func(ctx context.Context, msg interface{}) error {
 		return call(ctx, msg, func(context.Context) error { return seed(ctx, msg) })
+	}
+}
+
+func reverseApply(behaviours []mediator.Behaviour,
+	action func(mediator.Behaviour)) {
+	for i := len(behaviours) - 1; i >= 0; i-- {
+		action(behaviours[i])
 	}
 }

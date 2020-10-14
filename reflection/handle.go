@@ -3,7 +3,7 @@ package reflection
 import (
 	"reflect"
 
-	"github.com/eyazici90/go-mediator"
+	"github.com/eyazici90/go-mediator/internal/util"
 )
 
 func call(handler interface{}, ctx interface{}, method reflect.Value, msg interface{}) error {
@@ -19,7 +19,7 @@ func callHandle(handler interface{}, msg interface{}) error {
 
 	handleMethod, ok := handlerType.MethodByName(handleMethodName)
 
-	mediator.Must(ok, handlerType.String())
+	util.Must(ok, handlerType.String())
 
 	in := []reflect.Value{reflect.ValueOf(handler), reflect.ValueOf(msg)}
 

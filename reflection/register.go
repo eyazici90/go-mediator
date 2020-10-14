@@ -3,7 +3,7 @@ package reflection
 import (
 	"reflect"
 
-	"github.com/eyazici90/go-mediator"
+	"github.com/eyazici90/go-mediator/internal/util"
 )
 
 const handleMethodName string = "Handle"
@@ -20,7 +20,7 @@ func (m *reflectBasedMediator) RegisterHandler(handler interface{}) Mediator {
 
 	method, ok := handlerType.MethodByName(handleMethodName)
 
-	mediator.Must(ok, handlerType.String())
+	util.Must(ok, handlerType.String())
 
 	requestType := reflect.TypeOf(method.Func.Interface()).In(2)
 
