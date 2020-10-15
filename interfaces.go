@@ -19,4 +19,10 @@ type (
 		Use(call func(context.Context, interface{}, Next) error) Builder
 		Build() (Mediator, error)
 	}
+	RequestHandler interface {
+		Handle(context.Context, interface{}) error
+	}
+	PipelineBehaviour interface {
+		Process(context.Context, interface{}, Next) error
+	}
 )

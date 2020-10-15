@@ -2,10 +2,6 @@ package mediator
 
 import "context"
 
-type PipelineBehaviour interface {
-	Process(context.Context, interface{}, Next) error
-}
-
 type Behaviour func(context.Context, interface{}, Next) error
 
 type Next func(ctx context.Context) error
