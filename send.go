@@ -16,7 +16,7 @@ func (m *mediator) send(ctx context.Context, request interface{}) error {
 	requestType := reflect.TypeOf(request)
 	handler, ok := m.handlers[requestType]
 	if !ok {
-		return HandlerNotFound
+		return ErrHandlerNotFound
 	}
 	return handler.Handle(ctx, request)
 }
