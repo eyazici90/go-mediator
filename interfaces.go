@@ -8,21 +8,24 @@ type (
 		Publisher
 	}
 	Sender interface {
-		Send(context.Context, interface{}) error
+		Send(context.Context, Message) error
 	}
 	Publisher interface {
-		Publish(msg interface{})
+		Publish(msg Message)
 	}
 	Builder interface {
-		RegisterHandler(request interface{}, handler RequestHandler) Builder
+		RegisterHandler(request Message, handler RequestHandler) Builder
 		UseBehaviour(PipelineBehaviour) Builder
-		Use(call func(context.Context, interface{}, Next) error) Builder
+		Use(call func(context.Context, Message, Next) error) Builder
 		Build() (Mediator, error)
 	}
 	RequestHandler interface {
-		Handle(context.Context, interface{}) error
+		Handle(context.Context, Message) error
 	}
 	PipelineBehaviour interface {
-		Process(context.Context, interface{}, Next) error
+		Process(context.Context, Message, Next) error
+	}
+	Message interface {
+		Key() string
 	}
 )

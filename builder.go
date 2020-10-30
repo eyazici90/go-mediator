@@ -2,18 +2,17 @@ package mediator
 
 import (
 	"context"
-	"reflect"
 )
 
 type builder struct {
 	pipelineContext PipelineContext
-	handlers        map[reflect.Type]RequestHandler
+	handlers        map[string]RequestHandler
 }
 
 func New() Builder {
 	return &builder{
 		pipelineContext: NewPipelineContext(),
-		handlers:        make(map[reflect.Type]RequestHandler),
+		handlers:        make(map[string]RequestHandler),
 	}
 }
 
@@ -21,15 +20,15 @@ func (b *builder) UseBehaviour(pipelineBehaviour PipelineBehaviour) Builder {
 	return b.Use(pipelineBehaviour.Process)
 }
 
-func (b *builder) Use(call func(context.Context, interface{}, Next) error) Builder {
+func (b *builder) Use(call func(context.Context, Message, Next) error) Builder {
 	b.pipelineContext.Behaviours = append(b.pipelineContext.Behaviours, call)
 	return b
 }
 
-func (b *builder) RegisterHandler(request interface{}, handler RequestHandler) Builder {
-	requestType := reflect.TypeOf(request)
+func (b *builder) RegisterHandler(request Message, handler RequestHandler) Builder {
+	key := request.Key()
 
-	b.handlers[requestType] = handler
+	b.handlers[key] = handler
 	return b
 }
 

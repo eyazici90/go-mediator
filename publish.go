@@ -1,5 +1,5 @@
 package mediator
 
-func (m *mediator) Publish(msg interface{}) {
+func (m *mediator) Publish(msg Message) {
 	//
 }

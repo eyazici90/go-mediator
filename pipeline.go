@@ -2,11 +2,11 @@ package mediator
 
 import "context"
 
-type Behaviour func(context.Context, interface{}, Next) error
+type Behaviour func(context.Context, Message, Next) error
 
 type Next func(ctx context.Context) error
 
-type Pipeline func(context.Context, interface{}) error
+type Pipeline func(context.Context, Message) error
 
 type PipelineContext struct {
 	Behaviours []Behaviour

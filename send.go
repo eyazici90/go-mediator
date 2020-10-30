@@ -2,19 +2,18 @@ package mediator
 
 import (
 	"context"
-	"reflect"
 )
 
-func (m *mediator) Send(ctx context.Context, msg interface{}) error {
+func (m *mediator) Send(ctx context.Context, request Message) error {
 	if m.PipelineContext.Pipeline != nil {
-		return m.PipelineContext.Pipeline(ctx, msg)
+		return m.PipelineContext.Pipeline(ctx, request)
 	}
-	return m.send(ctx, msg)
+	return m.send(ctx, request)
 }
 
-func (m *mediator) send(ctx context.Context, request interface{}) error {
-	requestType := reflect.TypeOf(request)
-	handler, ok := m.handlers[requestType]
+func (m *mediator) send(ctx context.Context, request Message) error {
+	key := request.Key()
+	handler, ok := m.handlers[key]
 	if !ok {
 		return ErrHandlerNotFound
 	}
@@ -27,7 +26,7 @@ func (m *mediator) pipe(call Behaviour) {
 	}
 	seed := m.PipelineContext.Pipeline
 
-	m.PipelineContext.Pipeline = func(ctx context.Context, msg interface{}) error {
+	m.PipelineContext.Pipeline = func(ctx context.Context, msg Message) error {
 		return call(ctx, msg, func(context.Context) error { return seed(ctx, msg) })
 	}
 }

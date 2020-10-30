@@ -8,9 +8,9 @@ import (
 )
 
 func BenchmarkMediator(b *testing.B) {
-	m, _ := mediator.New().RegisterHandler(FakeCommand{}, NewFakeCommandHandler()).Build()
+	m, _ := mediator.New().RegisterHandler(&FakeCommand{}, NewFakeCommandHandler()).Build()
 
-	cmd := FakeCommand{Name: "Emre"}
+	cmd := &FakeCommand{Name: "Emre"}
 	ctx := context.TODO()
 
 	b.ReportAllocs()
@@ -22,7 +22,7 @@ func BenchmarkMediator(b *testing.B) {
 
 func BenchmarkHandler(b *testing.B) {
 	handler := NewFakeCommandHandler()
-	cmd := FakeCommand{Name: "Emre"}
+	cmd := &FakeCommand{Name: "Emre"}
 	ctx := context.TODO()
 	b.ReportAllocs()
 	b.ResetTimer()
