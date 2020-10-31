@@ -98,6 +98,6 @@ In-process messaging.
 				    }).Build()
        
 ## Examples
-[Simple](https://github.com/eyazici90/go-mediator/tree/master/examples)
+[Simple](https://github.com/eyazici90/go-mediator/tree/master/_examples)
 
 TBD...
