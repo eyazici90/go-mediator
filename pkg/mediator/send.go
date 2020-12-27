@@ -4,20 +4,20 @@ import (
 	"context"
 )
 
-func (m *mediator) Send(ctx context.Context, request Message) error {
+func (m *mediator) Send(ctx context.Context, req Message) error {
 	if m.PipelineContext.Pipeline != nil {
-		return m.PipelineContext.Pipeline(ctx, request)
+		return m.PipelineContext.Pipeline(ctx, req)
 	}
-	return m.send(ctx, request)
+	return m.send(ctx, req)
 }
 
-func (m *mediator) send(ctx context.Context, request Message) error {
-	key := request.Key()
+func (m *mediator) send(ctx context.Context, req Message) error {
+	key := req.Key()
 	handler, ok := m.handlers[key]
 	if !ok {
 		return ErrHandlerNotFound
 	}
-	return handler.Handle(ctx, request)
+	return handler.Handle(ctx, req)
 }
 
 func (m *mediator) pipe(call Behaviour) {

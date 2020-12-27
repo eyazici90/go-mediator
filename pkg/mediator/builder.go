@@ -16,8 +16,8 @@ func New() Builder {
 	}
 }
 
-func (b *builder) UseBehaviour(pipelineBehaviour PipelineBehaviour) Builder {
-	return b.Use(pipelineBehaviour.Process)
+func (b *builder) UseBehaviour(p PipelineBehaviour) Builder {
+	return b.Use(p.Process)
 }
 
 func (b *builder) Use(call func(context.Context, Message, Next) error) Builder {
@@ -25,10 +25,10 @@ func (b *builder) Use(call func(context.Context, Message, Next) error) Builder {
 	return b
 }
 
-func (b *builder) RegisterHandler(request Message, handler RequestHandler) Builder {
-	key := request.Key()
+func (b *builder) RegisterHandler(req Message, h RequestHandler) Builder {
+	key := req.Key()
 
-	b.handlers[key] = handler
+	b.handlers[key] = h
 	return b
 }
 
@@ -39,8 +39,8 @@ func (b *builder) Build() (Mediator, error) {
 }
 
 func reverseApply(behaviours []Behaviour,
-	action func(Behaviour)) {
+	fn func(Behaviour)) {
 	for i := len(behaviours) - 1; i >= 0; i-- {
-		action(behaviours[i])
+		fn(behaviours[i])
 	}
 }
