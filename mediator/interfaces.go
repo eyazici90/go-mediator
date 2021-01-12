@@ -16,7 +16,7 @@ type (
 	Builder interface {
 		RegisterHandler(request Message, handler RequestHandler) Builder
 		UseBehaviour(PipelineBehaviour) Builder
-		Use(call func(context.Context, Message, Next) error) Builder
+		Use(fn func(context.Context, Message, Next) error) Builder
 		Build() (Mediator, error)
 	}
 	RequestHandler interface {
