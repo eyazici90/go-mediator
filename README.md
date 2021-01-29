@@ -20,7 +20,7 @@ In-process messaging.
 	    return CreateOrderCommandHandler{}
     }
      
-    func (handler CreateOrderCommandHandler) Handle(ctx context.Context, request mediator.Message) error {
+    func (CreateOrderCommandHandler) Handle(ctx context.Context, msg mediator.Message) error {
     
 	    //Do something
 	     return nil
@@ -38,7 +38,7 @@ In-process messaging.
     func  NewLogger() *Logger { return &Logger{} }
     
     
-    func (l *Logger) Process(ctx context.Context, cmd mediator.Message, next mediator.Next) error { 
+    func (l *Logger) Process(ctx context.Context, msg mediator.Message, next mediator.Next) error { 
     
 		    log.Println("Pre Process!")
 		    
@@ -53,7 +53,7 @@ In-process messaging.
 
 ***Func based usage***
 
-    m := mediator.New().Use(func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
+    m := mediator.New().Use(func(ctx context.Context, msg mediator.Message, next mediator.Next) error {
 				    
 					    log.Println("Pre Process!")
 					    
