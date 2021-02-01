@@ -2,45 +2,43 @@ package mediator
 
 import "context"
 
-type mediator struct {
-	PipelineContext
-	handlers map[string]RequestHandler
+type Mediator struct {
+	context PipelineContext
 }
 
-func newMediator(pipelineContext PipelineContext, handlers map[string]RequestHandler) *mediator {
-	return &mediator{
-		handlers:        handlers,
-		PipelineContext: pipelineContext,
+func newMediator(ctx PipelineContext) *Mediator {
+	return &Mediator{
+		context: ctx,
 	}
 }
 
-func (m *mediator) Send(ctx context.Context, req Message) error {
-	if m.PipelineContext.Pipeline != nil {
-		return m.PipelineContext.Pipeline(ctx, req)
+func (m *Mediator) Send(ctx context.Context, req Message) error {
+	if m.context.pipeline != nil {
+		return m.context.pipeline(ctx, req)
 	}
 	return m.send(ctx, req)
 }
 
-func (m *mediator) send(ctx context.Context, req Message) error {
+func (m *Mediator) send(ctx context.Context, req Message) error {
 	key := req.Key()
-	handler, ok := m.handlers[key]
+	handler, ok := m.context.handlers[key]
 	if !ok {
 		return ErrHandlerNotFound
 	}
 	return handler.Handle(ctx, req)
 }
 
-func (m *mediator) pipe(call Behaviour) {
-	if m.PipelineContext.Pipeline == nil {
-		m.PipelineContext.Pipeline = m.send
+func (m *Mediator) pipe(call Behaviour) {
+	if m.context.pipeline == nil {
+		m.context.pipeline = m.send
 	}
-	seed := m.PipelineContext.Pipeline
+	seed := m.context.pipeline
 
-	m.PipelineContext.Pipeline = func(ctx context.Context, msg Message) error {
+	m.context.pipeline = func(ctx context.Context, msg Message) error {
 		return call(ctx, msg, func(context.Context) error { return seed(ctx, msg) })
 	}
 }
 
-func (m *mediator) Publish(msg Message) {
+func (m *Mediator) Publish(msg Message) {
 	//
 }

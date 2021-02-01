@@ -9,7 +9,7 @@ import (
 
 func TestBuild_should_return_mediator(t *testing.T) {
 
-	m, err := New().Use(func(context.Context, Message, Next) error {
+	m, err := NewContext().Use(func(context.Context, Message, Next) error {
 		return nil
 	}).Build()
 

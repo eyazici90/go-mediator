@@ -13,7 +13,7 @@ func TestMediator_should_dispath_msg_when_send(t *testing.T) {
 	}
 	handler := &fakeCommandHandler{}
 
-	m, err := New().
+	m, err := NewContext().
 		RegisterHandler(&fakeCommand{}, handler).
 		Build()
 
@@ -38,7 +38,7 @@ func TestMediator_should_execute_behaviour_when_send(t *testing.T) {
 	}
 	handler := &fakeCommandHandler{}
 
-	m, err := New().
+	m, err := NewContext().
 		Use(behaviour).
 		RegisterHandler(&fakeCommand{}, handler).
 		Build()

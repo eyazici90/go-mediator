@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	m, _ := mediator.New().
+	m, _ := mediator.NewContext().
 		Use(func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
 			log.Println("Pre Process - 1!")
 			next(ctx)

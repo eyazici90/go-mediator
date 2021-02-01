@@ -3,7 +3,7 @@ package mediator
 import "context"
 
 type (
-	Mediator interface {
+	SendPublisher interface {
 		Sender
 		Publisher
 	}
@@ -17,7 +17,7 @@ type (
 		RegisterHandler(request Message, handler RequestHandler) Builder
 		UseBehaviour(PipelineBehaviour) Builder
 		Use(fn func(context.Context, Message, Next) error) Builder
-		Build() (Mediator, error)
+		Build() (SendPublisher, error)
 	}
 	RequestHandler interface {
 		Handle(context.Context, Message) error
