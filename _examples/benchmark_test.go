@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/eyazici90/go-mediator"
+	"github.com/eyazici90/go-mediator/mediator"
 )
 
 func BenchmarkMediator(b *testing.B) {
-	m, _ := mediator.New().RegisterHandler(&FakeCommand{}, NewFakeCommandHandler()).Build()
+	m, _ := mediator.NewContext().RegisterHandler(&FakeCommand{}, NewFakeCommandHandler()).Build()
 
 	cmd := &FakeCommand{Name: "Emre"}
 	ctx := context.TODO()
