@@ -49,11 +49,11 @@ In-process messaging.
 		    return result
     }
     
-    m := mediator.New().UseBehaviour(behaviour.NewLogger()).Build()
+    m := mediator.NewContext().UseBehaviour(behaviour.NewLogger()).Build()
 
 ***Func based usage***
 
-    m := mediator.New().Use(func(ctx context.Context, msg mediator.Message, next mediator.Next) error {
+    m := mediator.NewContext().Use(func(ctx context.Context, msg mediator.Message, next mediator.Next) error {
 				    
 					    log.Println("Pre Process!")
 					    
@@ -68,7 +68,7 @@ In-process messaging.
 
 ## Usages
 
-    m := mediator.New().  
+    m := mediator.NewContext().  
 		  UseBehaviour(behaviour.NewLogger()). 
 		  UseBehaviour(behaviour.NewValidator()). 
 		  RegisterHandlers(command.NewFakeCommandCommandHandler(r)). 
@@ -85,7 +85,7 @@ In-process messaging.
 
 ***Func based usage***
 
-    m := mediator.New().Use(func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
+    m := mediator.NewContext().Use(func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
 				    
 					    log.Println("Pre Process!")
 					    
