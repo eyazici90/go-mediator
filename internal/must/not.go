@@ -1,6 +1,6 @@
-package util
+package must
 
-func Must(ok bool, handlerType string) {
+func NotFalse(ok bool, handlerType string) {
 	if !ok {
 		panic("handle method does not exists for the typeOf" + handlerType)
 	}
