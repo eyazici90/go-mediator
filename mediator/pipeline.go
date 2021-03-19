@@ -38,7 +38,7 @@ func (p *PipelineContext) RegisterHandler(req Message, h RequestHandler) Builder
 	return p
 }
 
-func (p *PipelineContext) Build() (SendPublisher, error) {
+func (p *PipelineContext) Build() (*Mediator, error) {
 	m := newMediator(*p)
 	reverseApply(p.behaviours, m.pipe)
 	return m, nil

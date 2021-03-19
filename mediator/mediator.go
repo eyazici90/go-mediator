@@ -29,7 +29,7 @@ func (m *Mediator) send(ctx context.Context, req Message) error {
 }
 
 func (m *Mediator) pipe(call Behaviour) {
-	if m.context.pipeline == nil {
+	if m.context.pipeline.empty() {
 		m.context.pipeline = m.send
 	}
 	seed := m.context.pipeline
@@ -37,8 +37,4 @@ func (m *Mediator) pipe(call Behaviour) {
 	m.context.pipeline = func(ctx context.Context, msg Message) error {
 		return call(ctx, msg, func(context.Context) error { return seed(ctx, msg) })
 	}
-}
-
-func (m *Mediator) Publish(msg Message) {
-	//
 }
