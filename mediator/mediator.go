@@ -13,10 +13,10 @@ func newMediator(ctx PipelineContext) *Mediator {
 }
 
 func (m *Mediator) Send(ctx context.Context, req Message) error {
-	if m.context.pipeline != nil {
-		return m.context.pipeline(ctx, req)
+	if m.context.pipeline.empty() {
+		return m.send(ctx, req)
 	}
-	return m.send(ctx, req)
+	return m.context.pipeline(ctx, req)
 }
 
 func (m *Mediator) send(ctx context.Context, req Message) error {

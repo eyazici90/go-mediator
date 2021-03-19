@@ -8,6 +8,8 @@ type Next func(ctx context.Context) error
 
 type Pipeline func(context.Context, Message) error
 
+func (p Pipeline) empty() bool { return p == nil }
+
 type PipelineContext struct {
 	behaviours []Behaviour
 	pipeline   Pipeline
