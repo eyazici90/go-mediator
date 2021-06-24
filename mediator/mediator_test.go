@@ -7,30 +7,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMediator_should_dispath_msg_when_send(t *testing.T) {
+func TestMediator_should_dispatch_msg_when_send(t *testing.T) {
 	cmd := &fakeCommand{
 		name: "Amsterdam",
 	}
 	handler := &fakeCommandHandler{}
 
-	m, err := NewContext().
+	m, _ := NewContext().
 		RegisterHandler(&fakeCommand{}, handler).
 		Build()
 
-	err = m.Send(context.Background(), cmd)
+	err := m.Send(context.Background(), cmd)
 
 	assert.NoError(t, err)
 	assert.Equal(t, cmd, handler.captured)
 }
 
-func TestMediator_should_execute_behaviour_when_send(t *testing.T) {
-
+func TestMediator_should_execute_behavior_when_send(t *testing.T) {
 	var got Message
-	behaviour := func(ctx context.Context, msg Message, next Next) error {
+	behavior := func(ctx context.Context, msg Message, next Next) error {
 		got = msg
-		next(ctx)
-
-		return nil
+		return next(ctx)
 	}
 
 	cmd := &fakeCommand{
@@ -38,12 +35,12 @@ func TestMediator_should_execute_behaviour_when_send(t *testing.T) {
 	}
 	handler := &fakeCommandHandler{}
 
-	m, err := NewContext().
-		Use(behaviour).
+	m, _ := NewContext().
+		Use(behavior).
 		RegisterHandler(&fakeCommand{}, handler).
 		Build()
 
-	err = m.Send(context.Background(), cmd)
+	err := m.Send(context.Background(), cmd)
 
 	assert.NoError(t, err)
 	assert.Equal(t, cmd, got)

@@ -2,7 +2,16 @@ package mediator
 
 import "context"
 
-type Behaviour func(context.Context, Message, Next) error
+type (
+	Behavior  func(context.Context, Message, Next) error
+	Behaviors []Behavior
+)
+
+func (b Behaviors) reverseApply(fn func(Behavior)) {
+	for i := len(b) - 1; i >= 0; i-- {
+		fn(b[i])
+	}
+}
 
 type Next func(ctx context.Context) error
 
@@ -11,9 +20,9 @@ type Pipeline func(context.Context, Message) error
 func (p Pipeline) empty() bool { return p == nil }
 
 type PipelineContext struct {
-	behaviours []Behaviour
-	pipeline   Pipeline
-	handlers   map[string]RequestHandler
+	behaviors []Behavior
+	pipeline  Pipeline
+	handlers  map[string]RequestHandler
 }
 
 func NewContext() *PipelineContext {
@@ -22,12 +31,12 @@ func NewContext() *PipelineContext {
 	}
 }
 
-func (p *PipelineContext) UseBehaviour(behaviour PipelineBehaviour) Builder {
-	return p.Use(behaviour.Process)
+func (p *PipelineContext) UseBehavior(behavior PipelineBehaviour) Builder {
+	return p.Use(behavior.Process)
 }
 
 func (p *PipelineContext) Use(call func(context.Context, Message, Next) error) Builder {
-	p.behaviours = append(p.behaviours, call)
+	p.behaviors = append(p.behaviors, call)
 	return p
 }
 
@@ -40,13 +49,6 @@ func (p *PipelineContext) RegisterHandler(req Message, h RequestHandler) Builder
 
 func (p *PipelineContext) Build() (*Mediator, error) {
 	m := newMediator(*p)
-	reverseApply(p.behaviours, m.pipe)
+	Behaviors(p.behaviors).reverseApply(m.pipe)
 	return m, nil
-}
-
-func reverseApply(behaviours []Behaviour,
-	fn func(Behaviour)) {
-	for i := len(behaviours) - 1; i >= 0; i-- {
-		fn(behaviours[i])
-	}
 }

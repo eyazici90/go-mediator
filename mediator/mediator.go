@@ -28,7 +28,7 @@ func (m *Mediator) send(ctx context.Context, req Message) error {
 	return handler.Handle(ctx, req)
 }
 
-func (m *Mediator) pipe(call Behaviour) {
+func (m *Mediator) pipe(call Behavior) {
 	if m.context.pipeline.empty() {
 		m.context.pipeline = m.send
 	}
