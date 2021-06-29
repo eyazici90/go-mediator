@@ -70,6 +70,6 @@ func (p *PipelineContext) registerHandler(req Message, h RequestHandler) {
 
 func (p *PipelineContext) Build() (*Mediator, error) {
 	m := newMediator(*p)
-	Behaviors(p.behaviors).reverseApply(m.pipe)
+	p.behaviors.reverseApply(m.pipe)
 	return m, nil
 }
