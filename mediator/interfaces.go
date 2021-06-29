@@ -6,12 +6,12 @@ type (
 	Sender interface {
 		Send(context.Context, Message) error
 	}
-	Builder interface {
-		RegisterHandler(request Message, handler RequestHandler) Builder
-		UseBehavior(PipelineBehaviour) Builder
-		Use(fn func(context.Context, Message, Next) error) Builder
-		Build() (*Mediator, error)
-	}
+	// Builder interface {
+	// 	RegisterHandler(request Message, handler RequestHandler) Builder
+	// 	UseBehavior(PipelineBehaviour) Builder
+	// 	Use(fn func(context.Context, Message, Next) error) Builder
+	// 	Build() (*Mediator, error)
+	// }
 	RequestHandler interface {
 		Handle(context.Context, Message) error
 	}

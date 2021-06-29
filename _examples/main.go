@@ -5,28 +5,31 @@ import (
 	"errors"
 	"log"
 
+	"github.com/eyazici90/go-mediator/internal/must"
 	"github.com/eyazici90/go-mediator/mediator"
 )
 
 func main() {
+	m, err := mediator.NewContext(
+		mediator.WithBehaviourFunc(
+			func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
+				log.Println("Pre Process - 1!")
+				next(ctx)
+				log.Println("Post Process - 1")
 
-	m, _ := mediator.NewContext().
-		Use(func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
-			log.Println("Pre Process - 1!")
-			next(ctx)
-			log.Println("Post Process - 1")
+				return nil
+			}), mediator.WithBehaviourFunc(
+			func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
+				log.Println("Pre Process!- 2")
+				next(ctx)
+				log.Println("Post Process - 2")
 
-			return nil
-		}).
-		Use(func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
-			log.Println("Pre Process!- 2")
-			next(ctx)
-			log.Println("Post Process - 2")
-
-			return nil
-		}).
-		RegisterHandler(&FakeCommand{}, NewFakeCommandHandler()).
+				return nil
+			}),
+		mediator.WithHandler(&FakeCommand{}, NewFakeCommandHandler())).
 		Build()
+
+	must.NotFail(err)
 
 	cmd := &FakeCommand{
 		Name: "Emre",
@@ -34,7 +37,6 @@ func main() {
 	ctx := context.Background()
 
 	m.Send(ctx, cmd)
-
 }
 
 type FakeCommand struct {
@@ -54,5 +56,6 @@ func (FakeCommandHandler) Handle(_ context.Context, command mediator.Message) er
 	if cmd.Name == "" {
 		return errors.New("Name is empty")
 	}
+	log.Println("handling fake cmd")
 	return nil
 }
