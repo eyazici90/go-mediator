@@ -3,13 +3,20 @@ package mediator
 import "context"
 
 type Mediator struct {
-	context PipelineContext
+	context *PipelineContext
 }
 
-func newMediator(ctx PipelineContext) *Mediator {
-	return &Mediator{
-		context: ctx,
+func New(opts ...Option) (*Mediator, error) {
+	pctx, err := newPipelineContext(opts...)
+	if err != nil {
+		return nil, err
 	}
+	m := &Mediator{
+		context: pctx,
+	}
+
+	pctx.behaviors.reverseApply(m.pipe)
+	return m, nil
 }
 
 func (m *Mediator) Send(ctx context.Context, req Message) error {

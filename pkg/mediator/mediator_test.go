@@ -1,9 +1,10 @@
-package mediator
+package mediator_test
 
 import (
 	"context"
 	"testing"
 
+	"github.com/eyazici90/go-mediator/pkg/mediator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,9 +14,9 @@ func TestMediator_should_dispatch_msg_when_send(t *testing.T) {
 	}
 	handler := &fakeCommandHandler{}
 
-	m, _ := NewContext(
-		WithHandler(&fakeCommand{}, handler),
-	).Build()
+	m, _ := mediator.New(
+		mediator.WithHandler(&fakeCommand{}, handler),
+	)
 
 	err := m.Send(context.Background(), cmd)
 
@@ -24,8 +25,8 @@ func TestMediator_should_dispatch_msg_when_send(t *testing.T) {
 }
 
 func TestMediator_should_execute_behavior_when_send(t *testing.T) {
-	var got Message
-	behavior := func(ctx context.Context, msg Message, next Next) error {
+	var got mediator.Message
+	behavior := func(ctx context.Context, msg mediator.Message, next mediator.Next) error {
 		got = msg
 		return next(ctx)
 	}
@@ -35,10 +36,10 @@ func TestMediator_should_execute_behavior_when_send(t *testing.T) {
 	}
 	handler := &fakeCommandHandler{}
 
-	m, _ := NewContext(
-		WithBehaviourFunc(behavior),
-		WithHandler(&fakeCommand{}, handler),
-	).Build()
+	m, _ := mediator.New(
+		mediator.WithBehaviourFunc(behavior),
+		mediator.WithHandler(&fakeCommand{}, handler),
+	)
 
 	err := m.Send(context.Background(), cmd)
 
@@ -53,10 +54,10 @@ type fakeCommand struct {
 func (*fakeCommand) Key() string { return "fakeCommand" }
 
 type fakeCommandHandler struct {
-	captured Message
+	captured mediator.Message
 }
 
-func (f *fakeCommandHandler) Handle(_ context.Context, msg Message) error {
+func (f *fakeCommandHandler) Handle(_ context.Context, msg mediator.Message) error {
 	f.captured = msg
 	return nil
 }
