@@ -8,7 +8,7 @@ import (
 )
 
 func BenchmarkMediator(b *testing.B) {
-	m, _ := mediator.NewContext().RegisterHandler(&FakeCommand{}, NewFakeCommandHandler()).Build()
+	m, _ := mediator.New(mediator.WithHandler(&FakeCommand{}, NewFakeCommandHandler()))
 
 	cmd := &FakeCommand{Name: "Emre"}
 	ctx := context.TODO()

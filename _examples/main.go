@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	m, err := mediator.NewContext(
+	m, err := mediator.New(
 		mediator.WithBehaviourFunc(
 			func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
 				log.Println("Pre Process - 1!")
@@ -26,8 +26,7 @@ func main() {
 
 				return nil
 			}),
-		mediator.WithHandler(&FakeCommand{}, NewFakeCommandHandler())).
-		Build()
+		mediator.WithHandler(&FakeCommand{}, NewFakeCommandHandler()))
 
 	must.NotFail(err)
 
