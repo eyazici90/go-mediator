@@ -1,105 +1,122 @@
+
 # go-mediator
 
-Simple mediator implementation in golang. <br/>
+Simple mediator implementation in go. <br/>
 
-In-process messaging.
+In-process messaging with behaviours.
+  
 
 ## Commands
 
-type CreateOrderCommand struct {
-
-Id string `validate:"required,min=10"`
-
-}
-
-func (CreateOrderCommand) Key() string { return "CreateOrderCommand" }
-
-type CreateOrderCommandHandler struct {
-
-}
-
-func NewCreateOrderCommandHandler() CreateOrderCommandHandler {
-
-return CreateOrderCommandHandler{}
-
-}
-
-func (CreateOrderCommandHandler) Handle(ctx context.Context, msg mediator.Message) error {
-
-//Do something
-
-return nil
-
-}
+      
+    
+    type CreateOrderCommand struct {
+    
+    Id string `validate:"required,min=10"`
+    
+    }
+    
+    func (CreateOrderCommand) Key() string { return "CreateOrderCommand" }
+    
+      
+    
+    type CreateOrderCommandHandler struct {
+    
+    }
+    
+    func NewCreateOrderCommandHandler() CreateOrderCommandHandler {
+    
+    return CreateOrderCommandHandler{}
+    
+    }
+    
+    func (CreateOrderCommandHandler) Handle(ctx context.Context, msg mediator.Message) error {
+    
+    //Do something
+    
+    return nil
+    
+    }
 
 ## Behaviours
 
-**_PipelineBehaviour interface implementation usage_**
+  
 
-type Logger struct{}
+***PipelineBehaviour interface implementation usage***
 
-func NewLogger() \*Logger { return &Logger{} }
+  
 
-func (l \*Logger) Process(ctx context.Context, msg mediator.Message, next mediator.Next) error {
+    type Logger struct{}
+    
+    func NewLogger() *Logger { return &Logger{} }
+    
+    func (l *Logger) Process(ctx context.Context, msg mediator.Message, next mediator.Next) error {
+    
+    log.Println("Pre Process!")
+    
+    result := next(ctx)
+    
+    log.Println("Post Process")
+    
+    return result
+    
+    }
+    
+    m, err := mediator.New(mediator.WithBehaviour(behaviour.NewLogger()))
 
-log.Println("Pre Process!")
+  
 
-result := next(ctx)
+***Func based usage***
 
-log.Println("Post Process")
+    m, err := mediator.New(mediator.WithBehaviourFunc(func(ctx context.Context, msg mediator.Message, next mediator.Next) error {
+    
+    log.Println("Pre Process!")
+    
+    next(ctx)
+    
+    log.Println("Post Process")
+    
+    return  nil
+    
+    }))
 
-return result
-
-}
-
-m, err := mediator.New(mediator.WithBehaviour(behaviour.NewLogger()))
-
-**_Func based usage_**
-
-m, err := mediator.New(mediator.WithBehaviourFunc(func(ctx context.Context, msg mediator.Message, next mediator.Next) error {
-
-log.Println("Pre Process!")
-
-next(ctx)
-
-log.Println("Post Process")
-
-return nil
-
-}))
+  
 
 ## Usages
 
-m, err := mediator.New(
-mediator.WithBehaviour(behaviour.NewLogger()),
-mediator.WithBehaviour(behaviour.NewValidator()),
-mediator.WithHandler(FakeCommand{}, NewFakeCommandCommandHandler(r)),
-)
+  
 
-cmd := FakeCommand{
+    m, err := mediator.New(
+    mediator.WithBehaviour(behaviour.NewLogger()),
+    mediator.WithBehaviour(behaviour.NewValidator()),
+    mediator.WithHandler(FakeCommand{}, NewFakeCommandCommandHandler(r)),
+    )
+    
+    cmd := FakeCommand{   
+    Name: "Amsterdam",  
+    }
+    
+    ctx := context.Background()
+    
+    err := m.Send(ctx, cmd)
 
-Name: "Amsterdam",
+  
 
-}
+***Func based usage***
 
-ctx := context.Background()
-
-m.Send(ctx, cmd)
-
-**_Func based usage_**
-
-m, err := mediator.New(mediator.WithBehaviourFunc(func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
-log.Println("Pre Process - 1!")
-
-next(ctx)
-
-log.Println("Post Process - 1")
-return nil
-
-}))
+    m, err  := mediator.New(mediator.WithBehaviourFunc(func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
+    log.Println("Pre Process - 1!")
+    
+    next(ctx)
+    
+    log.Println("Post Process - 1")
+    return  nil
+    }))
 
 ## Examples
 
 [Simple](https://github.com/eyazici90/go-mediator/tree/master/_examples)
+
+  
 
 TBD...
