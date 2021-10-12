@@ -28,15 +28,15 @@ type PipelineContext struct {
 }
 
 func newPipelineContext(opts ...Option) (*PipelineContext, error) {
-	ctx := &PipelineContext{
+	ctx := PipelineContext{
 		handlers: make(map[string]RequestHandler),
 	}
 	for _, opt := range opts {
-		if err := opt(ctx); err != nil {
+		if err := opt(&ctx); err != nil {
 			return nil, err
 		}
 	}
-	return ctx, nil
+	return &ctx, nil
 }
 
 func WithBehaviour(behavior PipelineBehaviour) Option {

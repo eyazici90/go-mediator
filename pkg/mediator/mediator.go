@@ -2,6 +2,8 @@ package mediator
 
 import "context"
 
+var _ Sender = &Mediator{}
+
 type Mediator struct {
 	context *PipelineContext
 }
