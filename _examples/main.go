@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/eyazici90/go-mediator/internal/must"
-	"github.com/eyazici90/go-mediator/pkg/mediator"
+	"github.com/eyazici90/go-mediator/mediator"
 )
 
 func main() {
