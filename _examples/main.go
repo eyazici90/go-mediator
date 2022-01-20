@@ -42,8 +42,6 @@ type FakeCommand struct {
 	Name string
 }
 
-//func (*FakeCommand) Key() string { return "FakeCommand" }
-
 func (*FakeCommand) Key() int { return 1 }
 
 type FakeCommandHandler struct{}
@@ -57,6 +55,5 @@ func (FakeCommandHandler) Handle(_ context.Context, command mediator.Message) er
 	if cmd.Name == "" {
 		return errors.New("Name is empty")
 	}
-	//log.Println("handling fake cmd")
 	return nil
 }
