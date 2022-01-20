@@ -51,7 +51,7 @@ type fakeCommand struct {
 	name string
 }
 
-func (*fakeCommand) Key() string { return "fakeCommand" }
+func (*fakeCommand) Key() int { return 1 }
 
 type fakeCommandHandler struct {
 	captured mediator.Message

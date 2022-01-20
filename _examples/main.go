@@ -14,14 +14,14 @@ func main() {
 		mediator.WithBehaviourFunc(
 			func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
 				log.Println("Pre Process - 1!")
-				next(ctx)
+				_ = next(ctx)
 				log.Println("Post Process - 1")
 
 				return nil
 			}), mediator.WithBehaviourFunc(
 			func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
 				log.Println("Pre Process!- 2")
-				next(ctx)
+				_ = next(ctx)
 				log.Println("Post Process - 2")
 
 				return nil
@@ -35,14 +35,16 @@ func main() {
 	}
 	ctx := context.Background()
 
-	m.Send(ctx, cmd)
+	_ = m.Send(ctx, cmd)
 }
 
 type FakeCommand struct {
 	Name string
 }
 
-func (*FakeCommand) Key() string { return "FakeCommand" }
+//func (*FakeCommand) Key() string { return "FakeCommand" }
+
+func (*FakeCommand) Key() int { return 1 }
 
 type FakeCommandHandler struct{}
 
@@ -55,6 +57,6 @@ func (FakeCommandHandler) Handle(_ context.Context, command mediator.Message) er
 	if cmd.Name == "" {
 		return errors.New("Name is empty")
 	}
-	log.Println("handling fake cmd")
+	//log.Println("handling fake cmd")
 	return nil
 }
