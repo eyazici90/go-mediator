@@ -53,7 +53,7 @@ func NewFakeCommandHandler() FakeCommandHandler {
 func (FakeCommandHandler) Handle(_ context.Context, command mediator.Message) error {
 	cmd := command.(*FakeCommand)
 	if cmd.Name == "" {
-		return errors.New("Name is empty")
+		return errors.New("name is empty")
 	}
 	return nil
 }

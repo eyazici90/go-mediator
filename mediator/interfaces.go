@@ -13,7 +13,6 @@ type (
 		Process(context.Context, Message, Next) error
 	}
 	Message interface {
-		//Key() string
 		Key() int
 	}
 )

@@ -27,7 +27,7 @@ type PipelineContext struct {
 	handlers  []RequestHandler
 }
 
-const maxSize = 10
+const maxSize = 20
 
 func newPipelineContext(opts ...Option) (*PipelineContext, error) {
 	ctx := PipelineContext{
@@ -85,9 +85,9 @@ func (p *PipelineContext) registerHandler(req Message, h RequestHandler) error {
 }
 
 func (p *PipelineContext) findHandler(key int) (RequestHandler, error) {
-	handler := p.handlers[key]
-	if handler == nil {
+	v := p.handlers[key]
+	if v == nil {
 		return nil, ErrHandlerNotFound
 	}
-	return handler, nil
+	return v, nil
 }
