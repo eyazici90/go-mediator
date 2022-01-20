@@ -9,15 +9,15 @@ type Mediator struct {
 }
 
 func New(opts ...Option) (*Mediator, error) {
-	pctx, err := newPipelineContext(opts...)
+	pCtx, err := newPipelineContext(opts...)
 	if err != nil {
 		return nil, err
 	}
 	m := &Mediator{
-		context: pctx,
+		context: pCtx,
 	}
 
-	pctx.behaviors.reverseApply(m.pipe)
+	pCtx.behaviors.reverseApply(m.pipe)
 	return m, nil
 }
 
@@ -30,9 +30,9 @@ func (m *Mediator) Send(ctx context.Context, req Message) error {
 
 func (m *Mediator) send(ctx context.Context, req Message) error {
 	key := req.Key()
-	handler, ok := m.context.handlers[key]
-	if !ok {
-		return ErrHandlerNotFound
+	handler, err := m.context.findHandler(key)
+	if err != nil {
+		return err
 	}
 	return handler.Handle(ctx, req)
 }

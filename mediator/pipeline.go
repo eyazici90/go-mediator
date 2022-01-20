@@ -13,23 +13,25 @@ func (b Behaviors) reverseApply(fn func(Behavior)) {
 	}
 }
 
-type Next func(ctx context.Context) error
-
-type Pipeline func(context.Context, Message) error
-
-type Option func(pCtx *PipelineContext) error
+type (
+	Next     func(ctx context.Context) error
+	Pipeline func(context.Context, Message) error
+	Option   func(pCtx *PipelineContext) error
+)
 
 func (p Pipeline) empty() bool { return p == nil }
 
 type PipelineContext struct {
 	behaviors Behaviors
 	pipeline  Pipeline
-	handlers  map[string]RequestHandler
+	handlers  []RequestHandler
 }
+
+const maxSize = 20
 
 func newPipelineContext(opts ...Option) (*PipelineContext, error) {
 	ctx := PipelineContext{
-		handlers: make(map[string]RequestHandler),
+		handlers: make([]RequestHandler, maxSize),
 	}
 	for _, opt := range opts {
 		if err := opt(&ctx); err != nil {
@@ -80,4 +82,12 @@ func (p *PipelineContext) registerHandler(req Message, h RequestHandler) error {
 	p.handlers[key] = h
 
 	return nil
+}
+
+func (p *PipelineContext) findHandler(key int) (RequestHandler, error) {
+	v := p.handlers[key]
+	if v == nil {
+		return nil, ErrHandlerNotFound
+	}
+	return v, nil
 }
