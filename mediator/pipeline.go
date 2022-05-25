@@ -3,35 +3,48 @@ package mediator
 import "context"
 
 type (
+	Option func(pCtx *Pipeline) error
+	Next   func(ctx context.Context) error
+)
+
+type (
 	Behavior  func(context.Context, Message, Next) error
 	Behaviors []Behavior
 )
 
-func (b Behaviors) reverseApply(fn func(Behavior)) {
-	for i := len(b) - 1; i >= 0; i-- {
-		fn(b[i])
+func (b Behaviors) merge() Behavior {
+	var result func(context.Context, Message, Next) error
+
+	for _, v := range b {
+		if result == nil {
+			result = v
+			continue
+		}
+		seed := result
+		result = func(ctx context.Context, msg Message, next Next) error {
+			return v(ctx, msg, func(ctx context.Context) error {
+				return seed(ctx, msg, next)
+			})
+		}
 	}
+
+	return result
 }
 
-type (
-	Next     func(ctx context.Context) error
-	Pipeline func(context.Context, Message) error
-	Option   func(pCtx *PipelineContext) error
-)
+const maxSize = 64
 
-func (p Pipeline) empty() bool { return p == nil }
+type PipelineFunc func(context.Context, Message) error
 
-type PipelineContext struct {
+type Pipeline struct {
+	call PipelineFunc
+
 	behaviors Behaviors
-	pipeline  Pipeline
-	handlers  []RequestHandler
+	handlers  []Handler
 }
 
-const maxSize = 20
-
-func newPipelineContext(opts ...Option) (*PipelineContext, error) {
-	ctx := PipelineContext{
-		handlers: make([]RequestHandler, maxSize),
+func newPipeline(opts ...Option) (*Pipeline, error) {
+	ctx := Pipeline{
+		handlers: make([]Handler, maxSize),
 	}
 	for _, opt := range opts {
 		if err := opt(&ctx); err != nil {
@@ -42,31 +55,31 @@ func newPipelineContext(opts ...Option) (*PipelineContext, error) {
 }
 
 func WithBehaviour(behavior PipelineBehaviour) Option {
-	return func(pCtx *PipelineContext) error {
+	return func(pCtx *Pipeline) error {
 		return pCtx.useBehavior(behavior)
 	}
 }
 
 func WithBehaviourFunc(fn func(context.Context, Message, Next) error) Option {
-	return func(pCtx *PipelineContext) error {
+	return func(pCtx *Pipeline) error {
 		return pCtx.use(fn)
 	}
 }
 
-func WithHandler(req Message, rh RequestHandler) Option {
-	return func(pCtx *PipelineContext) error {
+func WithHandler(req Message, rh Handler) Option {
+	return func(pCtx *Pipeline) error {
 		return pCtx.registerHandler(req, rh)
 	}
 }
 
-func (p *PipelineContext) useBehavior(behavior PipelineBehaviour) error {
+func (p *Pipeline) useBehavior(behavior PipelineBehaviour) error {
 	if behavior == nil {
 		return ErrInvalidArg
 	}
 	return p.use(behavior.Process)
 }
 
-func (p *PipelineContext) use(call func(context.Context, Message, Next) error) error {
+func (p *Pipeline) use(call func(context.Context, Message, Next) error) error {
 	if call == nil {
 		return ErrInvalidArg
 	}
@@ -74,7 +87,7 @@ func (p *PipelineContext) use(call func(context.Context, Message, Next) error) e
 	return nil
 }
 
-func (p *PipelineContext) registerHandler(req Message, h RequestHandler) error {
+func (p *Pipeline) registerHandler(req Message, h Handler) error {
 	if req == nil || h == nil {
 		return ErrInvalidArg
 	}
@@ -84,7 +97,7 @@ func (p *PipelineContext) registerHandler(req Message, h RequestHandler) error {
 	return nil
 }
 
-func (p *PipelineContext) findHandler(key int) (RequestHandler, error) {
+func (p *Pipeline) findHandler(key int) (Handler, error) {
 	v := p.handlers[key]
 	if v == nil {
 		return nil, ErrHandlerNotFound
