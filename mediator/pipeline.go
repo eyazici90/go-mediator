@@ -35,8 +35,6 @@ const maxSize = 64
 
 type PipelineFunc func(context.Context, Message) error
 
-func (p PipelineFunc) empty() bool { return p == nil }
-
 type Pipeline struct {
 	call PipelineFunc
 
