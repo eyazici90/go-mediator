@@ -3,10 +3,7 @@ package mediator
 import "context"
 
 type (
-	Sender interface {
-		Send(context.Context, Message) error
-	}
-	RequestHandler interface {
+	Handler interface {
 		Handle(context.Context, Message) error
 	}
 	PipelineBehaviour interface {
