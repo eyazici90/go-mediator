@@ -13,14 +13,14 @@ func main() {
 	m, err := mediator.New(
 		mediator.WithBehaviourFunc(
 			func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
-				log.Println("Pre Process - 1!")
+				log.Println("Pre Process - 1")
 				_ = next(ctx)
 				log.Println("Post Process - 1")
 
 				return nil
 			}), mediator.WithBehaviourFunc(
 			func(ctx context.Context, cmd mediator.Message, next mediator.Next) error {
-				log.Println("Pre Process!- 2")
+				log.Println("Pre Process- 2")
 				_ = next(ctx)
 				log.Println("Post Process - 2")
 
