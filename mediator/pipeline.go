@@ -22,8 +22,8 @@ func (b Behaviors) merge() Behavior {
 		}
 		seed := result
 		result = func(ctx context.Context, msg Message, next Next) error {
-			return v(ctx, msg, func(ctx context.Context) error {
-				return seed(ctx, msg, next)
+			return seed(ctx, msg, func(ctx context.Context) error {
+				return v(ctx, msg, next)
 			})
 		}
 	}
@@ -36,8 +36,6 @@ const maxSize = 64
 type PipelineFunc func(context.Context, Message) error
 
 type Pipeline struct {
-	call PipelineFunc
-
 	behaviors Behaviors
 	handlers  []Handler
 }

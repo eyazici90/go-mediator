@@ -4,6 +4,7 @@ import "context"
 
 type Mediator struct {
 	pipeline *Pipeline
+	call     func(ctx context.Context, msg Message, next Next) error
 }
 
 func New(opts ...Option) (*Mediator, error) {
@@ -16,18 +17,17 @@ func New(opts ...Option) (*Mediator, error) {
 		pipeline: pipeline,
 	}
 
-	pipe := m.pipeline.behaviors.merge()
-	m.pipeline.call = func(ctx context.Context, msg Message) error {
-		return pipe(ctx, msg, func(ctx context.Context) error {
-			return m.send(ctx, msg)
-		})
-	}
+	call := m.pipeline.behaviors.merge()
+	m.call = call
+
 	return m, nil
 }
 
 func (m *Mediator) Send(ctx context.Context, req Message) error {
 	if len(m.pipeline.behaviors) > 0 {
-		return m.pipeline.call(ctx, req)
+		return m.call(ctx, req, func(ctx context.Context) error {
+			return m.send(ctx, req)
+		})
 	}
 	return m.send(ctx, req)
 }
