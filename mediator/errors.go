@@ -1,8 +1,24 @@
 package mediator
 
-import "errors"
+type errType int
 
-var (
-	ErrHandlerNotFound = errors.New("handler could not be found")
-	ErrInvalidArg      = errors.New("invalid arg")
+const (
+	ErrHandlerNotFound errType = iota
+	ErrInvalidArg
+
+	errCount
 )
+
+func (e errType) Error() string {
+	if e < 0 || e >= errCount {
+		panic("invalid err number")
+	}
+	return errDescriptions[e]
+}
+
+var _ = [1]int{}[len(errDescriptions)-int(errCount)]
+
+var errDescriptions = [...]string{
+	ErrHandlerNotFound: "handler could not be found",
+	ErrInvalidArg:      "invalid arg",
+}
