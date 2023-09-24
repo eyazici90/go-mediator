@@ -3,8 +3,7 @@ package mediator
 import "context"
 
 type (
-	Option func(pipe *Pipeline) error
-	Next   func(ctx context.Context) error
+	Next func(ctx context.Context) error
 )
 
 type (
@@ -34,51 +33,19 @@ func (b behaviors) merge() behavior {
 
 const maxSize = 64
 
-type PipelineFunc func(context.Context, Message) error
-
-type Pipeline struct {
+type pipeline struct {
 	bhs      behaviors
 	handlers []Handler
 }
 
-func newPipeline(opts ...Option) (*Pipeline, error) {
-	pipe := Pipeline{
-		handlers: make([]Handler, maxSize),
-	}
-	for _, opt := range opts {
-		if err := opt(&pipe); err != nil {
-			return nil, err
-		}
-	}
-	return &pipe, nil
-}
-
-func WithBehaviour(behavior PipelineBehaviour) Option {
-	return func(pipe *Pipeline) error {
-		return pipe.useBehavior(behavior)
-	}
-}
-
-func WithBehaviourFunc(fn func(context.Context, Message, Next) error) Option {
-	return func(pipe *Pipeline) error {
-		return pipe.use(fn)
-	}
-}
-
-func WithHandler(req Message, rh Handler) Option {
-	return func(pipe *Pipeline) error {
-		return pipe.registerHandler(req, rh)
-	}
-}
-
-func (p *Pipeline) useBehavior(behavior PipelineBehaviour) error {
+func (p *pipeline) useBehavior(behavior PipelineBehaviour) error {
 	if behavior == nil {
 		return ErrInvalidArg
 	}
 	return p.use(behavior.Process)
 }
 
-func (p *Pipeline) use(call func(context.Context, Message, Next) error) error {
+func (p *pipeline) use(call func(context.Context, Message, Next) error) error {
 	if call == nil {
 		return ErrInvalidArg
 	}
@@ -86,7 +53,7 @@ func (p *Pipeline) use(call func(context.Context, Message, Next) error) error {
 	return nil
 }
 
-func (p *Pipeline) registerHandler(req Message, h Handler) error {
+func (p *pipeline) registerHandler(req Message, h Handler) error {
 	if req == nil || h == nil {
 		return ErrInvalidArg
 	}
@@ -96,7 +63,7 @@ func (p *Pipeline) registerHandler(req Message, h Handler) error {
 	return nil
 }
 
-func (p *Pipeline) findHandler(key int) (Handler, error) {
+func (p *pipeline) findHandler(key int) (Handler, error) {
 	v := p.handlers[key]
 	if v == nil {
 		return nil, ErrHandlerNotFound

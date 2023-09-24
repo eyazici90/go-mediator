@@ -2,25 +2,61 @@ package mediator
 
 import "context"
 
+type Option func(m *Mediator) error
+
+type (
+	Handler interface {
+		Handle(context.Context, Message) error
+	}
+	PipelineBehaviour interface {
+		Process(context.Context, Message, Next) error
+	}
+	Message interface {
+		Key() int
+	}
+)
+
 type Mediator struct {
-	pipe *Pipeline
+	pipe *pipeline
 	call func(ctx context.Context, msg Message, next Next) error
 }
 
 func New(opts ...Option) (*Mediator, error) {
-	pipeline, err := newPipeline(opts...)
-	if err != nil {
-		return nil, err
+	p := pipeline{
+		handlers: make([]Handler, maxSize),
+	}
+	m := &Mediator{
+		pipe: &p,
 	}
 
-	m := &Mediator{
-		pipe: pipeline,
+	for _, opt := range opts {
+		if err := opt(m); err != nil {
+			return nil, err
+		}
 	}
 
 	call := m.pipe.bhs.merge()
 	m.call = call
 
 	return m, nil
+}
+
+func WithBehaviour(behavior PipelineBehaviour) Option {
+	return func(m *Mediator) error {
+		return m.pipe.useBehavior(behavior)
+	}
+}
+
+func WithBehaviourFunc(fn func(context.Context, Message, Next) error) Option {
+	return func(m *Mediator) error {
+		return m.pipe.use(fn)
+	}
+}
+
+func WithHandler(req Message, rh Handler) Option {
+	return func(m *Mediator) error {
+		return m.pipe.registerHandler(req, rh)
+	}
 }
 
 func (m *Mediator) Send(ctx context.Context, msg Message) error {
