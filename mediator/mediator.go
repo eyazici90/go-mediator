@@ -3,8 +3,8 @@ package mediator
 import "context"
 
 type Mediator struct {
-	pipeline *Pipeline
-	call     func(ctx context.Context, msg Message, next Next) error
+	pipe *Pipeline
+	call func(ctx context.Context, msg Message, next Next) error
 }
 
 func New(opts ...Option) (*Mediator, error) {
@@ -14,29 +14,29 @@ func New(opts ...Option) (*Mediator, error) {
 	}
 
 	m := &Mediator{
-		pipeline: pipeline,
+		pipe: pipeline,
 	}
 
-	call := m.pipeline.behaviors.merge()
+	call := m.pipe.bhs.merge()
 	m.call = call
 
 	return m, nil
 }
 
-func (m *Mediator) Send(ctx context.Context, req Message) error {
-	if len(m.pipeline.behaviors) > 0 {
-		return m.call(ctx, req, func(ctx context.Context) error {
-			return m.send(ctx, req)
+func (m *Mediator) Send(ctx context.Context, msg Message) error {
+	if len(m.pipe.bhs) > 0 {
+		return m.call(ctx, msg, func(ctx context.Context) error {
+			return m.send(ctx, msg)
 		})
 	}
-	return m.send(ctx, req)
+	return m.send(ctx, msg)
 }
 
-func (m *Mediator) send(ctx context.Context, req Message) error {
-	key := req.Key()
-	handler, err := m.pipeline.findHandler(key)
+func (m *Mediator) send(ctx context.Context, msg Message) error {
+	key := msg.Key()
+	handler, err := m.pipe.findHandler(key)
 	if err != nil {
 		return err
 	}
-	return handler.Handle(ctx, req)
+	return handler.Handle(ctx, msg)
 }

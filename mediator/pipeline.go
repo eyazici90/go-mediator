@@ -3,19 +3,20 @@ package mediator
 import "context"
 
 type (
-	Option func(pCtx *Pipeline) error
+	Option func(pipe *Pipeline) error
 	Next   func(ctx context.Context) error
 )
 
 type (
-	Behavior  func(context.Context, Message, Next) error
-	Behaviors []Behavior
+	behavior  func(context.Context, Message, Next) error
+	behaviors []behavior
 )
 
-func (b Behaviors) merge() Behavior {
+func (b behaviors) merge() behavior {
 	var result func(context.Context, Message, Next) error
 
 	for _, v := range b {
+		v := v
 		if result == nil {
 			result = v
 			continue
@@ -36,37 +37,37 @@ const maxSize = 64
 type PipelineFunc func(context.Context, Message) error
 
 type Pipeline struct {
-	behaviors Behaviors
-	handlers  []Handler
+	bhs      behaviors
+	handlers []Handler
 }
 
 func newPipeline(opts ...Option) (*Pipeline, error) {
-	ctx := Pipeline{
+	pipe := Pipeline{
 		handlers: make([]Handler, maxSize),
 	}
 	for _, opt := range opts {
-		if err := opt(&ctx); err != nil {
+		if err := opt(&pipe); err != nil {
 			return nil, err
 		}
 	}
-	return &ctx, nil
+	return &pipe, nil
 }
 
 func WithBehaviour(behavior PipelineBehaviour) Option {
-	return func(pCtx *Pipeline) error {
-		return pCtx.useBehavior(behavior)
+	return func(pipe *Pipeline) error {
+		return pipe.useBehavior(behavior)
 	}
 }
 
 func WithBehaviourFunc(fn func(context.Context, Message, Next) error) Option {
-	return func(pCtx *Pipeline) error {
-		return pCtx.use(fn)
+	return func(pipe *Pipeline) error {
+		return pipe.use(fn)
 	}
 }
 
 func WithHandler(req Message, rh Handler) Option {
-	return func(pCtx *Pipeline) error {
-		return pCtx.registerHandler(req, rh)
+	return func(pipe *Pipeline) error {
+		return pipe.registerHandler(req, rh)
 	}
 }
 
@@ -81,7 +82,7 @@ func (p *Pipeline) use(call func(context.Context, Message, Next) error) error {
 	if call == nil {
 		return ErrInvalidArg
 	}
-	p.behaviors = append(p.behaviors, call)
+	p.bhs = append(p.bhs, call)
 	return nil
 }
 
