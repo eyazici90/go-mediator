@@ -31,8 +31,6 @@ func (b behaviors) merge() behavior {
 	return result
 }
 
-const maxSize = 64
-
 type pipeline struct {
 	bhs      behaviors
 	handlers []Handler

@@ -2,6 +2,8 @@ package mediator
 
 import "context"
 
+const maxSize = 64
+
 type Option func(m *Mediator) error
 
 type (
