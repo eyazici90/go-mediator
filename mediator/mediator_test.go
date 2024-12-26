@@ -17,9 +17,7 @@ func TestMediator_should_dispatch_msg_when_send(t *testing.T) {
 	m, _ := mediator.New(
 		mediator.WithHandler(&fakeCommand{}, handler),
 	)
-
 	err := m.Send(context.Background(), cmd)
-
 	assert.NoError(t, err)
 	assert.Equal(t, cmd, handler.captured)
 }
@@ -40,9 +38,7 @@ func TestMediator_should_execute_behavior_when_send(t *testing.T) {
 		mediator.WithBehaviourFunc(behavior),
 		mediator.WithHandler(&fakeCommand{}, handler),
 	)
-
 	err := m.Send(context.Background(), cmd)
-
 	assert.NoError(t, err)
 	assert.Equal(t, cmd, got)
 }

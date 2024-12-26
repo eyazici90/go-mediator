@@ -24,22 +24,17 @@ type Mediator struct {
 }
 
 func New(opts ...Option) (*Mediator, error) {
-	p := pipeline{
-		handlers: make([]Handler, maxSize),
-	}
 	m := &Mediator{
-		pipe: &p,
+		pipe: &pipeline{
+			handlers: make([]Handler, maxSize),
+		},
 	}
-
 	for _, opt := range opts {
 		if err := opt(m); err != nil {
 			return nil, err
 		}
 	}
-
-	call := m.pipe.bhs.merge()
-	m.call = call
-
+	m.call = m.pipe.bhs.merge()
 	return m, nil
 }
 
