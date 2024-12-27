@@ -19,8 +19,8 @@ type (
 )
 
 type Mediator struct {
-	pipe *pipeline
-	call func(ctx context.Context, msg Message, next Next) error
+	pipe  *pipeline
+	chain func(ctx context.Context, msg Message, next Next) error
 }
 
 func New(opts ...Option) (*Mediator, error) {
@@ -34,7 +34,7 @@ func New(opts ...Option) (*Mediator, error) {
 			return nil, err
 		}
 	}
-	m.call = m.pipe.bhs.merge()
+	m.chain = m.pipe.bhs.merge()
 	return m, nil
 }
 
@@ -57,8 +57,8 @@ func WithHandler(req Message, rh Handler) Option {
 }
 
 func (m *Mediator) Send(ctx context.Context, msg Message) error {
-	if len(m.pipe.bhs) > 0 {
-		return m.call(ctx, msg, func(ctx context.Context) error {
+	if m.chain != nil {
+		return m.chain(ctx, msg, func(ctx context.Context) error {
 			return m.send(ctx, msg)
 		})
 	}
